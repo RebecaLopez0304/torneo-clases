@@ -35,7 +35,7 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
     const id = newId();
     setTeams((list) => [
       ...list,
-      { id, name: `Grupo ${list.length + 1}`, color: nextFreeColor(list.map((t) => t.color)), members: [] },
+      { id, name: `Equipo ${list.length + 1}`, color: nextFreeColor(list.map((t) => t.color)), members: [] },
     ]);
     setOpen(id);
   }
@@ -116,12 +116,12 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
                 </div>
                 {expanded && (
                   <label className="block px-2 pb-2">
-                    <span className="mb-1 block text-xs text-ink-muted">Un integrante por línea</span>
+                    <span className="mb-1 block text-xs text-ink-muted">Un integrante por línea (nombre o matrícula)</span>
                     <textarea
                       className="field min-h-28 resize-y"
                       value={t.members.join("\n")}
                       onChange={(e) => update(t.id, { members: e.target.value.split("\n") })}
-                      placeholder={"Ana López\nLuis Pérez"}
+                      placeholder={"María Fernández\nCarlos Rivera"}
                     />
                   </label>
                 )}

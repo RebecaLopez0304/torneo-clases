@@ -5,7 +5,7 @@ import clsx from "clsx";
 import type { GeneralSettings } from "@/lib/tournaments";
 
 const STEP_OPTIONS = [1, 2, 3, 5, 10];
-const UNIT_SUGGESTIONS = ["puntos", "aciertos", "respuestas", "goles", "estrellas"];
+const UNIT_SUGGESTIONS = ["puntos", "aciertos", "respuestas correctas", "retos", "goles"];
 
 export const DEFAULT_SETTINGS: GeneralSettings = {
   name: "",
@@ -70,7 +70,7 @@ export function GeneralForm({
             className="field"
             value={s.subtitle}
             onChange={(e) => setS({ ...s, subtitle: e.target.value })}
-            placeholder="2.º de secundaria · Matemáticas"
+            placeholder="Ingeniería de Software, 5.º semestre"
             maxLength={50}
           />
         </label>
