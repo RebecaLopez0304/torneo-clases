@@ -45,8 +45,8 @@ async function attempt(action: () => Promise<unknown>, fallback: string) {
 
 export function ScoreboardHeader({ onPick }: { onPick?: () => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-line-soft px-5 py-4">
-      <h2 className="panel-title flex min-w-0 items-center gap-2 text-xl whitespace-nowrap @md:gap-3 @md:text-3xl">
+    <div className="flex items-center justify-between gap-3 border-b border-line-soft px-4 py-4 @md:px-5">
+      <h2 className="panel-title flex min-w-0 items-center gap-2 text-lg whitespace-nowrap @sm:text-xl @md:gap-3 @md:text-3xl">
         <ChartNoAxesColumnIncreasing className="size-6 shrink-0 text-gold @md:size-7" strokeWidth={3} aria-hidden />
         Marcador en vivo
       </h2>
@@ -123,7 +123,7 @@ function LiveMatch({
       <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
         <TeamSide team={home} />
         <div className="flex flex-col items-center">
-          <div className="flex items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <BigScore value={match.homeScore} dim={finished && match.winnerId !== home.id} />
             <span className="font-display text-xl font-bold text-ink-muted">VS</span>
             <BigScore value={match.awayScore} dim={finished && match.winnerId !== away.id} />
@@ -179,7 +179,7 @@ function TeamSide({ team }: { team: Team }) {
     <div className="flex min-w-0 flex-col items-center gap-2 text-center">
       <Shield color={team.color} size={64} glow className="sm:hidden" />
       <Shield color={team.color} size={84} glow className="hidden sm:block" />
-      <p className="w-full truncate font-display text-xl font-bold sm:text-2xl">{team.name}</p>
+      <p className="line-clamp-2 w-full font-display text-base leading-tight font-bold break-words hyphens-auto sm:text-2xl">{team.name}</p>
     </div>
   );
 }
@@ -189,7 +189,7 @@ function BigScore({ value, dim }: { value: number; dim?: boolean }) {
     <span
       key={value}
       className={clsx(
-        "score-pop inline-block min-w-[1ch] text-center font-display text-7xl leading-none font-extrabold tabular-nums sm:text-8xl",
+        "score-pop inline-block min-w-[1ch] text-center font-display text-6xl leading-none font-extrabold tabular-nums sm:text-8xl",
         dim ? "text-ink-faint" : "text-ink drop-shadow-[0_2px_12px_rgb(140_180_255/0.35)]",
       )}
     >

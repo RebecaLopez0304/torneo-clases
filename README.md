@@ -23,6 +23,23 @@ Hecho con Next.js 15 y Firebase (Authentication + Firestore).
 La unidad del marcador ("puntos", "aciertos"…), los incrementos (±1, ±5…) y la duración de cada ronda
 se configuran por torneo.
 
+## Guía para administrar (también desde el celular)
+
+| Quiero…                                   | Dónde                                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| Entrar                                    | **Iniciar sesión** (arriba a la derecha) → Google o correo            |
+| Crear un torneo                           | Inicio → **Nuevo torneo**                                             |
+| Inscribir equipos e integrantes           | Torneo → **Configurar** (engrane) → pestaña **Equipos**               |
+| Sortear o acomodar cruces                 | **Configurar → Cruces**, o en el torneo el panel **Marcador** mientras está en preparación |
+| Iniciar el torneo                         | Botón **Iniciar torneo** (en Cruces o en el panel Marcador)           |
+| Elegir qué partido se juega               | Botón con trofeo del **Marcador**, o tocar un equipo del cuadro → **Llevar al marcador** |
+| Sumar/restar puntos, reloj, finalizar     | Panel **Marcador**                                                    |
+| Cambiar nombre, puntos o duración         | **Configurar → General**                                              |
+| Reiniciar resultados o borrar el torneo   | **Configurar → Opciones**                                             |
+| Dar o quitar permisos de admin            | Menú de tu cuenta → **Administradores** (solo la cuenta principal)    |
+
+En el celular, arriba del torneo hay un selector **Eliminatorias / Marcador** para cambiar de panel.
+
 ## Configurar Firebase
 
 1. En [console.firebase.google.com](https://console.firebase.google.com) crea un proyecto.

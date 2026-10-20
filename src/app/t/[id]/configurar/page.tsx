@@ -20,7 +20,7 @@ const TABS = [
   { id: "general", label: "General" },
   { id: "equipos", label: "Equipos" },
   { id: "cruces", label: "Cruces" },
-  { id: "opciones", label: "Más opciones" },
+  { id: "opciones", label: "Opciones" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -66,10 +66,10 @@ function Configurar() {
       </Link>
       <div className="panel overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-soft px-6 pt-6 pb-4">
-          <h1 className="panel-title truncate text-3xl">{tournament.name}</h1>
+          <h1 className="panel-title min-w-0 text-2xl break-words sm:text-3xl">{tournament.name}</h1>
           <StatusBadge status={tournament.status} />
         </div>
-        <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line-soft px-4 [scrollbar-width:none]">
+        <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line-soft px-2 [scrollbar-width:none] sm:px-4">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -78,7 +78,7 @@ function Configurar() {
               aria-selected={tab === t.id}
               onClick={() => router.replace(`/t/${id}/configurar?tab=${t.id}`, { scroll: false })}
               className={clsx(
-                "-mb-px shrink-0 border-b-2 px-3 py-3 text-sm font-semibold",
+                "-mb-px flex-1 shrink-0 border-b-2 px-2 py-3 text-sm font-semibold sm:flex-none sm:px-3",
                 tab === t.id ? "border-gold text-gold" : "border-transparent text-ink-muted hover:text-ink",
               )}
             >
