@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+:root {
+  --navy-950: #070f24;
+  --navy-900: #0c1a3a;
+  --navy-850: #10224a;
+  --navy-800: #142a57;
+  --navy-700: #1b3770;
+  --line: #2e4f8f;
+  --line-soft: #223e74;
+  --gold: #f4c430;
+  --gold-soft: #ffd95e;
+  --gold-deep: #6b4f12;
+  --ink: #eaf0ff;
+  --ink-muted: #8ea5d4;
+  --ink-faint: #5d75a8;
+  --plus: #1e8f4a;
+  --plus-edge: #3cc46f;
+  --minus: #4a1631;
+  --minus-edge: #9b2c5b;
+  --danger: #ff6b7d;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-navy-950: var(--navy-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-850: var(--navy-850);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-deep: var(--gold-deep);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-plus: var(--plus);
+  --color-plus-edge: var(--plus-edge);
+  --color-minus: var(--minus);
+  --color-minus-edge: var(--minus-edge);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-saira), system-ui, sans-serif;
+  --font-display: var(--font-saira-condensed), var(--font-saira), sans-serif;
+}
+
+html {
+  background: var(--navy-950);
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -5%, rgb(46 92 190 / 0.35), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 110%, rgb(30 70 160 / 0.25), transparent 70%),
+    var(--navy-950);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Destellos dorados diagonales de las esquinas, como en la propuesta */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  width: 46vmax;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgb(244 196 48 / 0.55), transparent);
+  filter: blur(0.5px);
+}
+body::before {
+  top: 9vmax;
+  left: -12vmax;
+  transform: rotate(-32deg);
+}
+body::after {
+  bottom: 9vmax;
+  right: -12vmax;
+  transform: rotate(-32deg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Panel principal: borde azul luminoso */
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, rgb(16 34 74 / 0.92), rgb(10 22 50 / 0.92));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgb(120 160 255 / 0.12),
+    0 0 0 1px rgb(10 20 45 / 0.6),
+    0 0 32px rgb(40 90 200 / 0.18);
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.round-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-size: 0.8125rem;
+}
+
+.chip {
+  background: var(--navy-800);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.field {
+  width: 100%;
+  background: var(--navy-900);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  color: var(--ink);
+}
+.field::placeholder {
+  color: var(--ink-faint);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgb(244 196 48 / 0.2);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  transition: background-color 120ms, border-color 120ms, opacity 120ms;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-gold {
+  background: var(--gold);
+  color: var(--navy-950);
+}
+.btn-gold:hover:not(:disabled) {
+  background: var(--gold-soft);
+}
+.btn-ghost {
+  border: 1px solid var(--line);
+  background: var(--navy-850);
+  color: var(--ink);
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--ink-muted);
+}
+.btn-danger {
+  border: 1px solid var(--minus-edge);
+  background: var(--minus);
+  color: #ffd6e4;
+}
+
+@keyframes score-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.score-pop {
+  animation: score-pop 260ms ease-out;
+}
+
+@keyframes champion-reveal {
+  0% { box-shadow: 0 0 0 rgb(244 196 48 / 0); transform: scale(0.96); }
+  60% { box-shadow: 0 0 42px rgb(244 196 48 / 0.65); transform: scale(1.04); }
+  100% { box-shadow: 0 0 22px rgb(244 196 48 / 0.35); transform: scale(1); }
+}
+.champion-reveal {
+  animation: champion-reveal 900ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
