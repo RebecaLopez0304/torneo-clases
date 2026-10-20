@@ -201,7 +201,10 @@ function RequestForm({
   onCancel?: () => void;
 }) {
   const full = t.teams.length >= MAX_TEAMS;
-  const [mode, setMode] = useState<"join" | "create">(t.teams.length === 0 ? "create" : "join");
+  // Al editar una solicitud se abre en el mismo modo que tenía.
+  const [mode, setMode] = useState<"join" | "create">(
+    request && request.status !== "approved" ? request.type : t.teams.length === 0 ? "create" : "join",
+  );
   const [teamId, setTeamId] = useState<string | null>(request?.type === "join" ? request.teamId : null);
   const used = t.teams.map((x) => x.color);
   const [name, setName] = useState(request?.newTeam?.name ?? "");
