@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import clsx from "clsx";
+import { checkTexts } from "@/lib/profanity";
 import type { GeneralSettings } from "@/lib/tournaments";
 
 const STEP_OPTIONS = [1, 2, 3, 5, 10];
@@ -40,6 +41,8 @@ export function GeneralForm({
     if (!s.name.trim()) return setError("Ponle un nombre al torneo.");
     if (!s.scoreUnit.trim()) return setError("Escribe cómo se llaman los puntos (por ejemplo, puntos o aciertos).");
     if (s.roundDurationSec < 10) return setError("La duración de cada ronda debe ser de al menos 10 segundos.");
+    const bad = checkTexts({ "Nombre del torneo": s.name, Subtítulo: s.subtitle, "Qué se cuenta": s.scoreUnit });
+    if (bad) return setError(bad);
     setBusy(true);
     setError(null);
     try {

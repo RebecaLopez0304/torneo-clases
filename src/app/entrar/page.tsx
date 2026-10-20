@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AppBar } from "@/components/AppBar";
 import { FirebaseMissing } from "@/components/FirebaseMissing";
 import { authErrorMessage, useAuth } from "@/lib/auth";
+import { checkTexts } from "@/lib/profanity";
 import { firebaseConfigured } from "@/lib/firebase";
 
 type Mode = "login" | "register" | "reset";
@@ -65,6 +66,8 @@ function LoginCard() {
     if (mode === "login") return run(() => signInWithEmail(email, password));
     if (mode === "register") {
       if (!name.trim()) return setError("Escribe tu nombre.");
+      const bad = checkTexts({ Nombre: name });
+      if (bad) return setError(bad);
       return run(() => registerWithEmail(name, email, password));
     }
     return run(async () => {

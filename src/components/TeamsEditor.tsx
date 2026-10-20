@@ -6,6 +6,9 @@ import clsx from "clsx";
 import { toast } from "sonner";
 import { MAX_TEAMS, MIN_TEAMS } from "@/lib/bracket";
 import { TEAM_COLORS, nextFreeColor } from "@/lib/colors";
+import { currentActor } from "@/lib/actor";
+import { checkTexts } from "@/lib/profanity";
+import { useApprovedMembers } from "@/lib/requests";
 import { saveTeams } from "@/lib/tournaments";
 import type { Team, Tournament } from "@/lib/types";
 import { Shield } from "./Shield";
@@ -17,6 +20,7 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
   const [teams, setTeams] = useState<Team[]>(tournament.teams);
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const accounts = useApprovedMembers(tournament.id);
   const dirty = JSON.stringify(teams) !== JSON.stringify(tournament.teams);
 
   // Si otra persona cambia los equipos y aquí no hay cambios sin guardar, refrescar.
@@ -35,7 +39,13 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
     const id = newId();
     setTeams((list) => [
       ...list,
-      { id, name: `Equipo ${list.length + 1}`, color: nextFreeColor(list.map((t) => t.color)), members: [] },
+      {
+        id,
+        name: `Equipo ${list.length + 1}`,
+        color: nextFreeColor(list.map((t) => t.color)),
+        members: [],
+        createdBy: currentActor(),
+      },
     ]);
     setOpen(id);
   }
@@ -49,6 +59,11 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
     if (clean.some((t) => !t.name)) return toast.error("Todos los equipos necesitan un nombre.");
     const names = clean.map((t) => t.name.toLowerCase());
     if (new Set(names).size !== names.length) return toast.error("Hay dos equipos con el mismo nombre.");
+    const bad = checkTexts({
+      "Nombre del equipo": clean.map((t) => t.name),
+      Integrantes: clean.flatMap((t) => t.members),
+    });
+    if (bad) return toast.error(bad);
     setBusy(true);
     try {
       await saveTeams(tournament.id, clean);
@@ -100,7 +115,7 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
                     className="btn btn-ghost shrink-0 px-3 text-sm"
                   >
                     <span className="hidden sm:inline">Integrantes</span>
-                    <span className="rounded bg-navy-700 px-1.5 text-xs">{t.members.filter((m) => m.trim()).length}</span>
+                    <span className="rounded bg-navy-700 px-1.5 text-xs">{t.members.filter((m) => m.trim()).length + (accounts.get(t.id)?.length ?? 0)}</span>
                     <ChevronDown className={clsx("size-4 transition-transform", expanded && "rotate-180")} aria-hidden />
                   </button>
                   {!locked && (
@@ -115,15 +130,26 @@ export function TeamsEditor({ tournament }: { tournament: Tournament }) {
                   )}
                 </div>
                 {expanded && (
-                  <label className="block px-2 pb-2">
-                    <span className="mb-1 block text-xs text-ink-muted">Un integrante por línea (nombre o matrícula)</span>
-                    <textarea
-                      className="field min-h-28 resize-y"
-                      value={t.members.join("\n")}
-                      onChange={(e) => update(t.id, { members: e.target.value.split("\n") })}
-                      placeholder={"María Fernández\nCarlos Rivera"}
-                    />
-                  </label>
+                  <div className="space-y-2 px-2 pb-2">
+                    {(accounts.get(t.id)?.length ?? 0) > 0 && (
+                      <p className="text-xs text-ink-muted">
+                        Con cuenta: <span className="text-ink">{accounts.get(t.id)!.map((a) => a.name).join(", ")}</span>
+                        <span className="text-ink-faint"> (se gestionan en Solicitudes)</span>
+                      </p>
+                    )}
+                    <label className="block">
+                      <span className="mb-1 block text-xs text-ink-muted">
+                        Sin cuenta: un integrante por línea (nombre o matrícula)
+                      </span>
+                      <textarea
+                        className="field min-h-28 resize-y"
+                        value={t.members.join("\n")}
+                        onChange={(e) => update(t.id, { members: e.target.value.split("\n") })}
+                        placeholder={"María Fernández\nCarlos Rivera"}
+                      />
+                    </label>
+                    {t.createdBy && <p className="text-xs text-ink-faint">Creado por {t.createdBy.name}</p>}
+                  </div>
                 )}
               </li>
             );

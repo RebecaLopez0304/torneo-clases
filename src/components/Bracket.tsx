@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Crown, MonitorPlay } from "lucide-react";
 import { championPath, matchId, roundCount, roundName } from "@/lib/bracket";
-import type { Match, Team } from "@/lib/types";
+import type { Actor, Match, Team } from "@/lib/types";
 import { countLabel } from "@/lib/text";
 import { Shield } from "./Shield";
 
@@ -15,6 +15,8 @@ type Props = {
   championId: string | null;
   activeMatchId: string | null;
   scoreUnit: string;
+  /** Integrantes con cuenta por equipo (se suman a los que anotó un admin) */
+  members?: Map<string, Actor[]>;
   /** Si existe, el admin puede mandar un partido al marcador */
   onShowMatch?: (matchId: string) => void;
 };
@@ -29,10 +31,21 @@ type Slot = {
 
 const CHIP_H = 44; // alto de cada equipo, para centrar los conectores en la primera ronda
 
-export function Bracket({ matches, teams, bracketSize, championId, activeMatchId, scoreUnit, onShowMatch }: Props) {
+export function Bracket({
+  matches,
+  teams,
+  bracketSize,
+  championId,
+  activeMatchId,
+  scoreUnit,
+  members,
+  onShowMatch,
+}: Props) {
   const rounds = roundCount(bracketSize);
   const colMin = rounds >= 4 ? 136 : 150;
-  const byId = new Map(teams.map((t) => [t.id, t]));
+  const byId = new Map(
+    teams.map((t) => [t.id, { ...t, members: [...t.members, ...(members?.get(t.id) ?? []).map((m) => m.name)] }]),
+  );
   const goldPath = championPath(matches, championId);
   const champion = championId ? (byId.get(championId) ?? null) : null;
   const [openKey, setOpenKey] = useState<string | null>(null);

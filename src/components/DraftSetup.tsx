@@ -1,8 +1,10 @@
 "use client";
 
-import { Settings } from "lucide-react";
+import Link from "next/link";
+import { Settings, UserPlus } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
+import { useAllRequests } from "@/lib/requests";
 import { setSlot } from "@/lib/tournaments";
 import type { Tournament } from "@/lib/types";
 import { DraftControls } from "./DraftControls";
@@ -21,6 +23,7 @@ export function DraftSetup({
 }) {
   const matches = t.slots.length / 2;
   const m = Math.min(selected, matches - 1);
+  const pending = useAllRequests(t.id, true)?.filter((r) => r.status === "pending").length ?? 0;
 
   async function place(slot: number, teamId: string | null) {
     try {
@@ -38,6 +41,15 @@ export function DraftSetup({
           El torneo está en preparación. Solo los administradores ven los cruces; el público ve una pantalla de espera
           hasta que lo inicies.
         </p>
+        {pending > 0 && (
+          <Link
+            href={`/t/${t.id}/configurar?tab=solicitudes`}
+            className="mt-3 flex items-center gap-2 rounded-lg border border-gold/50 bg-gold-deep/30 px-3 py-2.5 text-sm font-semibold text-gold-soft hover:border-gold"
+          >
+            <UserPlus className="size-4 shrink-0" aria-hidden />
+            {pending === 1 ? "1 solicitud de inscripción por revisar" : `${pending} solicitudes de inscripción por revisar`}
+          </Link>
+        )}
 
         <section className="mt-5">
           <h3 className="flex items-center gap-2 text-sm font-bold tracking-wide text-gold uppercase">

@@ -35,7 +35,7 @@ async function saveProfile(user: User, name?: string) {
   await setDoc(
     doc(db(), "users", user.uid),
     {
-      name: name ?? user.displayName ?? user.email?.split("@")[0] ?? "Sin nombre",
+      name: name || user.displayName || user.email?.split("@")[0] || "Sin nombre",
       email: user.email ?? "",
       photoURL: user.photoURL ?? "",
       provider: user.providerData[0]?.providerId ?? "password",
