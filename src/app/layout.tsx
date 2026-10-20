@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Saira, Saira_Condensed } from "next/font/google";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
 
 const saira = Saira({
@@ -24,9 +25,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="es">
       <body className={`${saira.variable} ${sairaCondensed.variable}`}>
-
+        <AuthProvider>
           <div className="relative z-10">{children}</div>
-
+        </AuthProvider>
         <Toaster
           theme="dark"
           position="top-center"
