@@ -18,7 +18,7 @@ const sairaCondensed = Saira_Condensed({
 
 export const metadata: Metadata = {
   title: "Torneo de clases",
-  description: "Eliminatorias y marcador en vivo para torneos entre grupos de clase.",
+  description: "Eliminatorias y marcador en vivo para torneos entre equipos de clases universitarias.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

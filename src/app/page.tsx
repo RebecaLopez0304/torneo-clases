@@ -56,7 +56,7 @@ function TournamentList() {
           <Shield size={48} color="#2e4f8f" />
           <p className="mt-4 text-lg font-semibold">Todavía no hay torneos</p>
           <p className="mt-1 text-ink-muted">
-            {isAdmin ? "Crea el primero e inscribe a los equipos de tu clase." : "Vuelve pronto: aquí aparecerán los torneos."}
+            {isAdmin ? "Crea el primero e inscribe a los equipos de tu materia." : "Vuelve pronto: aquí aparecerán los torneos."}
           </p>
           {isAdmin && (
             <Link href="/nuevo" className="btn btn-gold mt-5">

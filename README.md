@@ -1,6 +1,6 @@
 # Torneo de clases
 
-Torneos por eliminatorias entre equipos de una clase, con cuadro de eliminatorias y marcador en vivo.
+Torneos por eliminatorias entre equipos de clases universitarias, con cuadro de eliminatorias y marcador en vivo.
 Hecho con Next.js 15 y Firebase (Authentication + Firestore).
 
 - **Público:** cualquiera ve el torneo sin iniciar sesión; el marcador y el reloj se actualizan solos.
