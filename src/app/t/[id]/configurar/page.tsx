@@ -9,16 +9,19 @@ import { toast } from "sonner";
 import { AppBar } from "@/components/AppBar";
 import { ConfirmDialog } from "@/components/Dialog";
 import { GeneralForm } from "@/components/GeneralForm";
+import { RequestsTab } from "@/components/RequestsTab";
 import { RequireAdmin } from "@/components/RequireAdmin";
 import { SlotsEditor } from "@/components/SlotsEditor";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TeamsEditor } from "@/components/TeamsEditor";
+import { useAllRequests } from "@/lib/requests";
 import { backToDraft, deleteTournament, updateGeneral, useTournament } from "@/lib/tournaments";
 import type { Tournament } from "@/lib/types";
 
 const TABS = [
   { id: "general", label: "General" },
   { id: "equipos", label: "Equipos" },
+  { id: "solicitudes", label: "Solicitudes" },
   { id: "cruces", label: "Cruces" },
   { id: "opciones", label: "Opciones" },
 ] as const;
@@ -44,6 +47,8 @@ function Configurar() {
   const params = useSearchParams();
   const router = useRouter();
   const { tournament, loading } = useTournament(id);
+  const requests = useAllRequests(id, true);
+  const pending = requests?.filter((r) => r.status === "pending").length ?? 0;
   const requested = params.get("tab");
   const tab: TabId = TABS.some((t) => t.id === requested) ? (requested as TabId) : "general";
 
@@ -68,6 +73,12 @@ function Configurar() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-soft px-6 pt-6 pb-4">
           <h1 className="panel-title min-w-0 text-2xl break-words sm:text-3xl">{tournament.name}</h1>
           <StatusBadge status={tournament.status} />
+          {tournament.updatedBy && (
+            <p className="w-full text-xs text-ink-faint">
+              Último cambio: {tournament.updatedBy.name},{" "}
+              {new Date(tournament.updatedAt).toLocaleString("es", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          )}
         </div>
         <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line-soft px-2 [scrollbar-width:none] sm:px-4">
           {TABS.map((t) => (
@@ -83,12 +94,16 @@ function Configurar() {
               )}
             >
               {t.label}
+              {t.id === "solicitudes" && pending > 0 && (
+                <span className="ml-1.5 rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">{pending}</span>
+              )}
             </button>
           ))}
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {tab === "general" && <GeneralTab tournament={tournament} />}
           {tab === "equipos" && <TeamsEditor tournament={tournament} />}
+          {tab === "solicitudes" && <RequestsTab tournament={tournament} requests={requests} />}
           {tab === "cruces" && <SlotsEditor tournament={tournament} />}
           {tab === "opciones" && <OptionsTab tournament={tournament} />}
         </div>

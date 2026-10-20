@@ -1,10 +1,36 @@
+/** Quién hizo algo: siempre una cuenta. */
+export type Actor = { uid: string; name: string };
+
 export type Team = {
   id: string;
   name: string;
   /** Color del escudo (hex) */
   color: string;
-  /** Integrantes del equipo; no necesitan cuenta */
+  /** Integrantes que anotó un admin; no necesitan cuenta */
   members: string[];
+  /** Cuenta que creó el equipo (admin o la persona cuya propuesta se aprobó) */
+  createdBy?: Actor;
+};
+
+export type JoinRequestStatus = "pending" | "approved" | "rejected";
+
+/**
+ * Inscripción de una cuenta en un torneo: tournaments/{tid}/requests/{uid}.
+ * Una por cuenta y torneo. Si está aprobada, la persona es integrante de `teamId`.
+ */
+export type JoinRequest = {
+  uid: string;
+  name: string;
+  photoURL: string;
+  /** join: unirse a un equipo existente; create: proponer un equipo nuevo */
+  type: "join" | "create";
+  teamId: string | null;
+  newTeam: { name: string; color: string } | null;
+  status: JoinRequestStatus;
+  createdAt: number;
+  updatedAt: number;
+  decidedBy: Actor | null;
+  decidedAt: number | null;
 };
 
 export type TimerState = {
@@ -54,4 +80,6 @@ export type Tournament = {
   createdBy: string;
   createdAt: number;
   updatedAt: number;
+  /** Última cuenta que modificó el torneo */
+  updatedBy: Actor | null;
 };

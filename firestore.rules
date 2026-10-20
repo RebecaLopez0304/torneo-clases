@@ -60,6 +60,51 @@ service cloud.firestore {
     match /tournaments/{tid} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
+
+      // Inscripción de una cuenta en el torneo (una por cuenta: el id del documento es su uid).
+      match /requests/{uid} {
+        function isDraft() {
+          return get(/databases/$(database)/documents/tournaments/$(tid)).data.status == 'draft';
+        }
+
+        // Respaldo del filtro de vulgaridades de la app (palabras completas, en minúsculas).
+        function clean(s) {
+          return !s.lower().matches('(.*[^a-z])?(puta|puto|putas|putos|mierda|verga|vergas|pendej[a-z]*|ching[a-z]*|culer[a-z]*|culo|cabron[a-z]*|joto|maricon|marica|pinche|fuck[a-z]*|shit[a-z]*|bitch[a-z]*|ass|asshole|dick|cunt|whore|slut)([^a-z].*)?');
+        }
+
+        function validOwnRequest() {
+          let d = request.resource.data;
+          return d.keys().hasOnly(['uid', 'name', 'photoURL', 'type', 'teamId', 'newTeam', 'status',
+                                   'createdAt', 'updatedAt', 'decidedBy', 'decidedAt'])
+            && d.uid == uid
+            && d.status == 'pending'
+            && d.decidedBy == null
+            && d.decidedAt == null
+            // Queda a nombre de la cuenta: el mismo nombre de su perfil.
+            && d.name == get(/databases/$(database)/documents/users/$(uid)).data.name
+            && d.photoURL is string && d.photoURL.size() < 1000
+            && d.createdAt is int && d.updatedAt is int
+            && ((d.type == 'join' && d.teamId is string && d.newTeam == null)
+                || (d.type == 'create' && d.teamId == null
+                    && d.newTeam.keys().hasOnly(['name', 'color'])
+                    && d.newTeam.name is string
+                    && d.newTeam.name.size() > 0 && d.newTeam.name.size() <= 24
+                    && d.newTeam.color is string && d.newTeam.color.matches('#[0-9a-fA-F]{6}')
+                    && clean(d.newTeam.name)));
+        }
+
+        // Las aprobadas son públicas (integrantes de cada equipo); las demás solo las ve su dueño y los admins.
+        allow get: if (signedIn() && request.auth.uid == uid) || resource.data.status == 'approved' || isAdmin();
+        allow list: if resource.data.status == 'approved' || isAdmin();
+        // La cuenta crea o cambia su propia solicitud mientras el torneo está en preparación.
+        allow create, update: if signedIn() && request.auth.uid == uid && isDraft() && validOwnRequest();
+        // Los admins aprueban o rechazan dejando constancia de quién decidió.
+        allow update: if isAdmin()
+          && request.resource.data.decidedBy.uid == request.auth.uid
+          && request.resource.data.status in ['approved', 'rejected'];
+        // La cuenta cancela o sale del equipo mientras está en preparación; un admin siempre puede borrarla.
+        allow delete: if (signedIn() && request.auth.uid == uid && isDraft()) || isAdmin();
+      }
     }
   }
 }

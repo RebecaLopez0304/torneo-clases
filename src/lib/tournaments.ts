@@ -25,6 +25,7 @@ import {
   syncSlots,
   validateSlots,
 } from "./bracket";
+import { currentActor } from "./actor";
 import { db } from "./firebase";
 import { serverNow } from "./serverTime";
 import type { Match, Team, Tournament } from "./types";
@@ -32,10 +33,10 @@ import type { Match, Team, Tournament } from "./types";
 type TournamentData = Omit<Tournament, "id">;
 export type GeneralSettings = Pick<Tournament, "name" | "subtitle" | "scoreUnit" | "scoreSteps" | "roundDurationSec">;
 
-const col = () => collection(db(), "tournaments");
-const ref = (id: string) => doc(db(), "tournaments", id);
+export const col = () => collection(db(), "tournaments");
+export const ref = (id: string) => doc(db(), "tournaments", id);
 
-function fromSnap(snap: DocumentSnapshot): Tournament | null {
+export function fromSnap(snap: DocumentSnapshot): Tournament | null {
   if (!snap.exists()) return null;
   const d = snap.data() as Partial<TournamentData>;
   return {
@@ -56,6 +57,7 @@ function fromSnap(snap: DocumentSnapshot): Tournament | null {
     createdBy: d.createdBy ?? "",
     createdAt: d.createdAt ?? 0,
     updatedAt: d.updatedAt ?? 0,
+    updatedBy: d.updatedBy ?? null,
   };
 }
 
@@ -101,7 +103,7 @@ async function mutate(id: string, change: (t: Tournament) => Partial<TournamentD
   await runTransaction(db(), async (tx) => {
     const t = fromSnap(await tx.get(ref(id)));
     if (!t) throw new Error("El torneo ya no existe");
-    tx.update(ref(id), { ...change(t), updatedAt: Date.now() });
+    tx.update(ref(id), { ...change(t), updatedAt: Date.now(), updatedBy: currentActor() });
   });
 }
 
@@ -120,6 +122,7 @@ export async function createTournament(settings: GeneralSettings, uid: string): 
     createdBy: uid,
     createdAt: now,
     updatedAt: now,
+    updatedBy: currentActor(),
   };
   const created = await addDoc(col(), data);
   return created.id;

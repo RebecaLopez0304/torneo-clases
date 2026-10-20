@@ -28,6 +28,7 @@ import {
   type TimerAction,
 } from "@/lib/tournaments";
 import type { Match, Team, Tournament } from "@/lib/types";
+import { checkTexts } from "@/lib/profanity";
 import { countLabel } from "@/lib/text";
 import { Dialog } from "./Dialog";
 import { Shield } from "./Shield";
@@ -254,6 +255,12 @@ function MatchTimer({ t, match, canEdit }: { t: Tournament; match: Match; canEdi
   async function savePeriod() {
     setEditing(false);
     const value = period.trim() || "Ronda 1";
+    const bad = checkTexts({ Periodo: value });
+    if (bad) {
+      toast.error(bad);
+      setPeriod(match.periodLabel);
+      return;
+    }
     if (value !== match.periodLabel) await attempt(() => setPeriodLabel(t.id, match.id, value), "No se pudo guardar.");
   }
 

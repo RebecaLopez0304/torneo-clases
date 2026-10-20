@@ -6,10 +6,12 @@ import clsx from "clsx";
 import { ChartNoAxesColumnIncreasing, Settings, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { buildMatches } from "@/lib/bracket";
+import { useApprovedMembers } from "@/lib/requests";
 import { setActiveMatch } from "@/lib/tournaments";
 import type { Tournament } from "@/lib/types";
 import { Bracket } from "./Bracket";
 import { DraftSetup } from "./DraftSetup";
+import { JoinPanel } from "./JoinPanel";
 import { Scoreboard } from "./Scoreboard";
 import { TournamentHeader } from "./TournamentHeader";
 import { WaitingScreen } from "./WaitingScreen";
@@ -27,13 +29,16 @@ export function TournamentView({ tournament: t, canEdit }: { tournament: Tournam
     () => (draft ? buildMatches(t.slots, t.roundDurationSec) : t.matches),
     [draft, t.slots, t.roundDurationSec, t.matches],
   );
+  // Integrantes con cuenta (inscripciones aprobadas), por equipo.
+  const members = useApprovedMembers(t.id);
 
   if (draft && !canEdit) {
     return (
       <>
         <TournamentHeader name={t.name} subtitle={t.subtitle} />
-        <div className="px-4">
-          <WaitingScreen teamCount={t.teams.length} />
+        <div className="mx-auto max-w-3xl space-y-4 px-3 pb-12 sm:px-4">
+          <JoinPanel tournament={t} members={members} />
+          <WaitingScreen teams={t.teams} members={members} />
         </div>
       </>
     );
@@ -121,6 +126,7 @@ export function TournamentView({ tournament: t, canEdit }: { tournament: Tournam
                   championId={t.championId}
                   activeMatchId={draft ? `r0m${draftMatch}` : t.activeMatchId}
                   scoreUnit={t.scoreUnit}
+                  members={members}
                   onShowMatch={canEdit ? show : undefined}
                 />
               )}
