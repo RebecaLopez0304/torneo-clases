@@ -52,7 +52,7 @@ export function TournamentView({ tournament: t, canEdit }: { tournament: Tournam
           className={clsx(
             "panel grid gap-3 p-2 sm:gap-4 sm:p-4",
             // Con 16 equipos el cuadro necesita más ancho: lado a lado solo en pantallas grandes.
-            t.bracketSize >= 16 ? "xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]" : "lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]",
+            t.bracketSize >= 16 ? "xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]" : "lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]",
           )}
         >
           <section className="panel min-w-0 overflow-hidden" aria-label="Eliminatorias">

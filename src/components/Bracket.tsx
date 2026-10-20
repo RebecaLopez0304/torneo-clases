@@ -211,8 +211,9 @@ function TeamChip({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
+        title={team.name}
         className={clsx(
-          "flex w-full items-center gap-2.5 rounded-lg border px-3 text-left transition-colors",
+          "flex w-full items-center gap-2 rounded-lg border px-2.5 text-left transition-colors",
           onPath
             ? "border-gold/80 bg-navy-800 shadow-[0_0_14px_rgb(244_196_48/0.25)]"
             : active
@@ -223,7 +224,13 @@ function TeamChip({
         style={{ height: CHIP_H }}
       >
         <Shield color={team.color} size={20} glow={!lost} />
-        <span className={clsx("min-w-0 flex-1 truncate text-[0.95rem] font-semibold", onPath && "text-gold-soft")}>
+        {/* Nombres largos de equipos universitarios: hasta dos líneas antes de recortar */}
+        <span
+          className={clsx(
+            "line-clamp-2 min-w-0 flex-1 text-[0.9rem] leading-[1.1] font-semibold break-words",
+            onPath && "text-gold-soft",
+          )}
+        >
           {team.name}
         </span>
         {showScore && (

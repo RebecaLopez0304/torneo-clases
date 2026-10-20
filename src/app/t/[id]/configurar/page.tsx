@@ -69,7 +69,7 @@ function Configurar() {
           <h1 className="panel-title truncate text-3xl">{tournament.name}</h1>
           <StatusBadge status={tournament.status} />
         </div>
-        <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line-soft px-4">
+        <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line-soft px-4 [scrollbar-width:none]">
           {TABS.map((t) => (
             <button
               key={t.id}
