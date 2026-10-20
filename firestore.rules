@@ -1,0 +1,65 @@
+rules_version = '2';
+
+// Torneo de clases
+// - Cualquiera (sin sesión) puede ver los torneos.
+// - Solo las cuentas en admins/{uid} pueden crear o modificar torneos.
+// - La primera cuenta que inicia sesión queda como cuenta principal (meta/owner)
+//   y es la única que puede dar o quitar permisos de admin.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownerPath() {
+      return /databases/$(database)/documents/meta/owner;
+    }
+
+    function isOwner() {
+      return signedIn()
+        && exists(ownerPath())
+        && get(ownerPath()).data.uid == request.auth.uid;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /meta/owner {
+      allow read: if true;
+      // Solo se puede crear una vez (create no aplica a documentos existentes),
+      // y en el mismo lote que el admins/{uid} de quien la crea.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && existsAfter(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow update, delete: if false;
+    }
+
+    match /admins/{uid} {
+      allow read: if signedIn();
+      allow create: if isOwner()
+        || (uid == request.auth.uid
+            && !exists(ownerPath())
+            && getAfter(ownerPath()).data.uid == uid);
+      // La cuenta principal no se puede quitar a sí misma.
+      allow delete: if isOwner() && uid != request.auth.uid;
+      allow update: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if (signedIn() && request.auth.uid == uid) || isAdmin();
+      allow create, update: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'photoURL', 'provider', 'lastLoginAt']);
+      allow delete: if false;
+    }
+
+    match /tournaments/{tid} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
